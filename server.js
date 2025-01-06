@@ -23,15 +23,31 @@ app.get('/api/users', (req, res) => {
     } else{
         res.json(resData);
     }
-})
+});
+
+app.get('/api/users/:_id/logs', (req, res) => {
+
+    const data = JSON.parse(fs.readFileSync('./users.json'));
+    for(let i of data){
+        if(i._id == req.params._id){
+            res.json(i);
+            console.log(i);
+            return
+        }
+    }
+
+    res.json({error: "user does not exist!"});
+
+});
 
 app.post('/api/users', (req, res) => {
     console.log(req.body);
+    const id = uuidv4();
     if(!fs.existsSync('users.json')){
         const data = [{
             username: req.body['username'],
             count: 0,
-            _id: uuidv4(),
+            _id: id,
             log: []
         }]
         fs.writeFile('./users.json', JSON.stringify(data), err => {
@@ -44,7 +60,7 @@ app.post('/api/users', (req, res) => {
             jsonData.push( {
                 username: req.body['username'],
                 count: 0,
-                _id: uuidv4(),
+                _id: id,
                 log: []
             });
             fs.writeFile('./users.json', JSON.stringify(jsonData), err =>{
@@ -56,8 +72,46 @@ app.post('/api/users', (req, res) => {
        
     }
 
-    res.json({"username": `${req.body['username']}`, "_id": `${uuidv4()}`});
+    res.json({"username": `${req.body['username']}`, "_id": `${id}`});
      
+});
+
+
+app.post('/api/users/:_id/exercises', (req, res) => {
+
+    const data = JSON.parse(fs.readFileSync('./users.json'));
+    console.log('Former Data:', data);
+    for(let i of data){
+        if(i._id == req.params._id){
+            i.count++;
+            i.log.push({
+                description: req.body['description'],
+                duration: req.body['duration'],
+                date: req.body['date'] || new Date().toDateString()
+            })
+        }
+    }
+
+    console.log(data);
+
+    fs.writeFile('./users.json', JSON.stringify(data), err => {
+        if(err) throw err;
+        for(let i of data){
+            if(i._id == req.params._id){
+                res.json({
+                    username: i.username,
+                    description: req.body['description'],
+                    duration: req.body['duration'],
+                    date: req.body['date'] || new Date().toDateString(),
+                    _id: i._id
+                });
+            }
+        }
+    });
+
+ 
+
+  
 });
 
 
