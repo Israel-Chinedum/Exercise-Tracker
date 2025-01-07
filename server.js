@@ -192,7 +192,13 @@ app.post('/api/users', (req, res) => {
 
 app.post('/api/users/:_id/exercises', (req, res) => {
 
-    if(dateRegex.test(req.body['date'])){
+    if('date' in req.body){
+        if(!dateRegex.test(req.body['date'])){
+            res.json('Invalid date format!');
+            return;
+        }
+    }
+    
 
         const data = JSON.parse(fs.readFileSync('./users.json'));
     console.log('Former Data:', data);
@@ -223,10 +229,6 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             }
         }
     });
-
-    } else{
-        res.json("Invalid date format!");
-    }
   
 });
 
