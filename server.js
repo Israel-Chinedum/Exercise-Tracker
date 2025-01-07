@@ -194,12 +194,11 @@ app.post('/api/users/:_id/exercises', (req, res) => {
 
     let date;
 
-        if(!dateRegex.test(req.body['date'])){
-            date = new Date().toDateString();
-        } else{
-            date = new Date(req.body['date']).toDateString();
-        }
-    
+    if(!dateRegex.test(req.body['date'])){
+        date = new Date().toDateString();
+    } else{
+        date = new Date(req.body['date']).toDateString();
+    }
 
     const data = JSON.parse(fs.readFileSync('./users.json'));
     console.log('Former Data:', data);
@@ -230,6 +229,9 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             }
         }
     });
+
+ 
+
   
 });
 
