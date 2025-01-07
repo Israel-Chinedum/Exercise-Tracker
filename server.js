@@ -192,15 +192,16 @@ app.post('/api/users', (req, res) => {
 
 app.post('/api/users/:_id/exercises', (req, res) => {
 
-    if('date' in req.body){
+    let date;
+
         if(!dateRegex.test(req.body['date'])){
-            res.json('Invalid date format!');
-            return;
+            date = new Date().toDateString();
+        } else{
+            date = new Date(req.body['date']).toDateString();
         }
-    }
     
 
-        const data = JSON.parse(fs.readFileSync('./users.json'));
+    const data = JSON.parse(fs.readFileSync('./users.json'));
     console.log('Former Data:', data);
     for(let i of data){
         if(i._id == req.params._id){
@@ -208,7 +209,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             i.log.push({
                 description: req.body['description'],
                 duration: Number(req.body['duration']),
-                date: new Date(req.body['date']).toDateString() || new Date().toDateString()
+                date
             })
         }
     }
@@ -223,7 +224,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
                     username: i.username,
                     description: req.body['description'],
                     duration: Number(req.body['duration']),
-                    date: new Date(req.body['date']).toDateString() || new Date().toDateString(),
+                    date,
                     _id: i._id
                 });
             }
