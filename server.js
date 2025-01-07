@@ -198,7 +198,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
             i.count++;
             i.log.push({
                 description: req.body['description'],
-                duration: req.body['duration'],
+                duration: Number(req.body['duration']),
                 date: new Date(req.body['date']).toDateString() || new Date().toDateString()
             })
         }
@@ -213,7 +213,7 @@ app.post('/api/users/:_id/exercises', (req, res) => {
                 res.json({
                     username: i.username,
                     description: req.body['description'],
-                    duration: req.body['duration'],
+                    duration: Number(req.body['duration']),
                     date: new Date(req.body['date']).toDateString() || new Date().toDateString(),
                     _id: i._id
                 });
