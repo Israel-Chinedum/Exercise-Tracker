@@ -25,6 +25,8 @@ app.get('/api/users', (req, res) => {
     }
 });
 
+const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/ || /^\d{4}-\d{2}-\d{2}$/;
+
 app.get('/api/users/:_id/logs', (req, res) => {
 
 
@@ -42,10 +44,9 @@ app.get('/api/users/:_id/logs', (req, res) => {
     } else {
 
         const getDatesInbetween = (startDate = '', endDate = '', limit = '') => {
-            const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/ || /^\d{4}-\d{2}-\d{2}$/,
-                  dates = [],
-                  from = new Date(startDate),
-                  to = new Date(endDate);
+                const  dates = [],
+                       from = new Date(startDate),
+                       to = new Date(endDate);
 
             for(let i of data){
                 if(i._id == req.params._id){
@@ -191,7 +192,9 @@ app.post('/api/users', (req, res) => {
 
 app.post('/api/users/:_id/exercises', (req, res) => {
 
-    const data = JSON.parse(fs.readFileSync('./users.json'));
+    if(dateRegex.test(req.body['date'])){
+
+        const data = JSON.parse(fs.readFileSync('./users.json'));
     console.log('Former Data:', data);
     for(let i of data){
         if(i._id == req.params._id){
@@ -221,8 +224,9 @@ app.post('/api/users/:_id/exercises', (req, res) => {
         }
     });
 
- 
-
+    } else{
+        res.json("Invalid date format!");
+    }
   
 });
 
