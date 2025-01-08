@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { users } from './post_routes/users.js';
 import { getUsers } from './get_routes/get_users.js';
 import { exercises } from './post_routes/exercises.js';
+import { log } from './get_routes/logs.js';
 
 //CONNECT TO DATABASE
 mongoose.connect('mongodb+srv://fastarfavour:fastar081@exercise-tracker.m17rk.mongodb.net/Exercise_Tracker?retryWrites=true&w=majority&appName=Exercise-Tracker')
@@ -33,7 +34,7 @@ const port = 3200 || process.env.PORT;
 app.listen(port, () => console.log(`Now listening on port ${port}`));
 
 //REGEX FOR DATE
-const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/ || /^\d{4}-\d{2}-\d{2}$/;
+const dateRegex =  /^\d{4}-\d{2}-\d{2}$/;
 
 //POST ROUTE HANDLERS
 users(app, crypto, userModel);
@@ -41,3 +42,4 @@ exercises(app, userModel, dateRegex);
 
 //GET ROUTE HANDLERS
 getUsers(app, userModel);
+log(app, userModel, dateRegex);
