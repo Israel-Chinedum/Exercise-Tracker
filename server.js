@@ -1,36 +1,43 @@
+import mongoose from 'mongoose';
 import express from 'express';
-import {v4 as uuidv4} from 'uuid';
 import cors from 'cors';
-import fs from 'fs';
-import { users } from './get_routes/api_users.js';
-import { apiUsersLogs } from './get_routes/api_users_logs.js';
-import { apiUsers } from './post_routes/api_users.js';
-import { apiUsersExercises } from './post_routes/api_users_exercises.js';
+import crypto from 'crypto';
+import { users } from './post_routes/users.js';
+import { getUsers } from './get_routes/get_users.js';
+import { exercises } from './post_routes/exercises.js';
 
+//CONNECT TO DATABASE
+mongoose.connect('mongodb+srv://fastarfavour:fastar081@exercise-tracker.m17rk.mongodb.net/Exercise_Tracker?retryWrites=true&w=majority&appName=Exercise-Tracker')
+.then(() => console.log('Database connected!'));
 
-
-const app = express();
-const port = 3200 || process.env.PORT;
-
-app.listen(port, () => console.log(`Now listening on port ${port}`));
-
-app.use(express.urlencoded({extended: true}));
-app.use(express.json());
-app.use(cors());
-
-const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/ || /^\d{4}-\d{2}-\d{2}$/;
-
-//GET ROUTES
-users(app, fs);
-apiUsersLogs(app, dateRegex, fs);
-
-//POST ROUTES
-apiUsers(app, fs, uuidv4);
-apiUsersExercises(app, dateRegex, fs);
-
-
-app.use((err, req, res, next) => {
-    res.status(400).json(err.message)
-    console.log(err.message);
+//DATABASE SCHEMA
+const userSchema = mongoose.Schema({
+    username: String,
+    _id: String,
+    count: Number,
+    log: Array
 });
 
+//DATABASE MODEL
+const userModel = mongoose.model('users', userSchema);
+
+//SETUP EXPRESS SERVER
+const app = express();
+app.use(cors());
+app.use(express.urlencoded({extended: false}));
+app.use(express.json());
+
+//CONFIGURE PORT
+const port = 3200 || process.env.PORT;
+//LISTEN FOR INCOMING REQUESTS
+app.listen(port, () => console.log(`Now listening on port ${port}`));
+
+//REGEX FOR DATE
+const dateRegex = /^\d{4}\/\d{2}\/\d{2}$/ || /^\d{4}-\d{2}-\d{2}$/;
+
+//POST ROUTE HANDLERS
+users(app, crypto, userModel);
+exercises(app, userModel, dateRegex);
+
+//GET ROUTE HANDLERS
+getUsers(app, userModel);
